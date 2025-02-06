@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Efecto Matrix - BAUTY FIJTMAN</title>
+    <style>
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            background-color: black;
+            overflow: hidden;
+            font-family: 'Courier New', monospace;
+        }
+
+        .letter {
+            position: absolute;
+            font-size: 40px;
+            white-space: nowrap;
+            opacity: 1;
+            transition: opacity 1s ease-in;
+        }
+    </style>
+</head>
+
+<body>
+    <script>
+        const name = 'BAUTY FIJTMAN'; // El nombre a formar
+        const columns = []; // Almacena las posiciones de las columnas
+        const activeLetters = []; // Almacena las letras activas para borrarlas después
+
+        // Configuración
+        const numColumns = Math.floor(window.innerWidth / 40); // Número de columnas basado en el ancho de la pantalla
+        const fallSpeed = 50; // Velocidad de la caída de las letras
+        const letterLifetime = 2000; // Tiempo en milisegundos antes de borrar una letra
+
+        // Función para obtener un color aleatorio entre azul y amarillo
+        function getRandomColor() {
+            return Math.random() < 0.5 ? 'blue' : 'yellow';
+        }
+
+        // Función para crear una letra y hacerla caer
+        function createLetter(x, y, letter) {
+            const letterElement = document.createElement('div');
+            letterElement.className = 'letter';
+            letterElement.style.left = `${x}px`;
+            letterElement.style.top = `${y}px`;
+            letterElement.textContent = letter;
+            letterElement.style.color = getRandomColor(); // Asignar color aleatorio (azul o amarillo)
+            document.body.appendChild(letterElement);
+
+            // Añadir la letra a la lista de letras activas para eliminarla después
+            activeLetters.push(letterElement);
+
+            // Hacer caer la letra
+            function fall() {
+                if (parseInt(letterElement.style.top) < window.innerHeight) {
+                    letterElement.style.top = `${parseInt(letterElement.style.top) + 5}px`;
+                    setTimeout(fall, fallSpeed); // Caída continua
+                } else {
+                    letterElement.remove(); // Eliminar letra al llegar al final
+                }
+            }
+
+            fall();
+
+            // Borrar la letra después de un cierto tiempo
+            setTimeout(() => {
+                letterElement.style.opacity = '0'; // Hacerla desaparecer
+                setTimeout(() => {
+                    letterElement.remove(); // Eliminar el elemento después de la animación
+                }, 1000); // Tiempo para que la animación de desaparición se complete
+            }, letterLifetime);
+        }
+
+        // Función para crear el nombre "BAUTY FIJTMAN" letra por letra
+        function createName() {
+            let x = 0;
+            let y = 0;
+            let columnIndex = 0;
+
+            // Animar la creación de letras del nombre
+            const nameInterval = setInterval(() => {
+                if (columnIndex < name.length) {
+                    const letter = name[columnIndex];
+                    createLetter(x, y, letter); // Crear la letra
+                    x += 40; // Mover la posición horizontal para la próxima letra
+
+                    if (x >= window.innerWidth) {
+                        x = 0; // Reiniciar la posición horizontal cuando llegue al final de la pantalla
+                        y += 40; // Mover hacia abajo una línea
+                    }
+                    columnIndex++;
+                } else {
+                    columnIndex = 0; // Resetear el índice para repetir el nombre
+                }
+            }, 100); // Intervalo entre la creación de cada letra
+        }
+
+        // Función para iniciar la animación
+        function start() {
+            // Iniciar la creación del nombre sin necesidad de hacer clic
+            setInterval(createName, 5000); // Crear el nombre cada 5 segundos para mantener el bucle
+        }
+
+        // Iniciar la animación tan pronto como se cargue la página
+        window.onload = start;
+
+    </script>
+</body>
+
+</html>
